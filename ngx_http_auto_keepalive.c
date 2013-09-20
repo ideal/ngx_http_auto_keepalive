@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * Copyright (c) 2013 Shang Yuanchun <idealities@gmail.com>
  * All rights reserved.
@@ -83,11 +83,31 @@ ngx_module_t ngx_http_auto_keepalive_module = {
 
 static void *create_http_auto_keepalive_loc_conf(ngx_conf_t *cf)
 {
-    return NULL;
+    ngx_http_auto_keepalive_loc_conf_t *conf;
+
+    conf = ngx_pcalloc(cf->pool, sizeof(ngx_http_auto_keepalive_loc_conf_t));
+    if (conf == NULL) {
+#if defined nginx_version && nginx_version >= 8011
+        return NULL;
+#else
+        return NGX_CONF_ERROR;
+#endif
+    }
+
+    conf->keepalive_autoclose = NGX_CONF_UNSET;
+
+    return conf;
 }
 
 static char *merge_http_auto_keepalive_loc_conf(ngx_conf_t *cf,
                 void *parent, void *child)
 {
-    return NULL;
+    ngx_http_auto_keepalive_loc_conf_t *prev = parent;
+    ngx_http_auto_keepalive_loc_conf_t *conf = child;
+
+    ngx_conf_merge_value(conf->keepalive_autoclose, 
+                         prev->keepalive_autoclose,
+                         0);
+
+    return NGX_CONF_OK;
 }
