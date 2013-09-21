@@ -73,7 +73,7 @@ static ngx_command_t ngx_http_auto_keepalive_commands[] = {
 
 static ngx_http_module_t ngx_http_auto_keepalive_module_ctx = {
     NULL, /* preconfiguration  */
-    NULL, /* postconfiguration */
+    ngx_http_auto_keepalive_init, /* postconfiguration */
 
     NULL, /* create_main_conf */
     NULL, /* init_main_conf   */
@@ -128,24 +128,16 @@ static char *merge_http_auto_keepalive_loc_conf(ngx_conf_t *cf,
                          prev->keepalive_autoclose,
                          0);
 
-    if (conf->keepalive_autoclose) {
-        ngx_http_auto_keepalive_init(cf);
-    }
-
     return NGX_CONF_OK;
 }
 
 static ngx_int_t ngx_http_auto_keepalive_init(ngx_conf_t *cf)
 {
-    ngx_http_handler_pt       *handler;
-    ngx_http_core_main_conf_t *cmcf;
+    ngx_http_handler_pt       *handler = NULL;
+    ngx_http_core_main_conf_t *cmcf    = NULL;
 
     cmcf     = ngx_http_conf_get_module_main_conf(cf, ngx_http_core_module);
-    if (cmcf->phases[NGX_HTTP_POST_ACCESS_PHASE].handlers.pool == NULL) {
-        return NGX_OK;
-    }
-
-    handler  = ngx_array_push(&cmcf->phases[NGX_HTTP_POST_ACCESS_PHASE].handlers);
+    handler  = ngx_array_push(&cmcf->phases[NGX_HTTP_CONTENT_PHASE].handlers);
     if (handler == NULL) {
         return NGX_ERROR;
     }
