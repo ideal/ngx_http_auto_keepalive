@@ -8,6 +8,6 @@ Installation Instructions
 Build and install by running in nginx directory:
 
 ```
-./configure --add-module=/path/to/ngx_auto_keepalive
+./configure --add-module=/path/to/ngx_http_auto_keepalive
 ```
 
