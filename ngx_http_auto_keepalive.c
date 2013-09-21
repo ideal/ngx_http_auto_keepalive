@@ -38,6 +38,22 @@ static void *create_http_auto_keepalive_loc_conf(ngx_conf_t *cf);
 static char *merge_http_auto_keepalive_loc_conf(ngx_conf_t *cf,
                 void *parent, void *child);
 
+static ngx_inline u_char *ngx_strrlchr(
+                          u_char *p, u_char *last, u_char c)
+{
+    last--;
+    while (last >= p) {
+
+        if (*last == c) {
+            return last;
+        }
+
+        last--;
+    }
+
+    return NULL;
+}
+
 static ngx_command_t ngx_http_auto_keepalive_commands[] = {
 
     { ngx_string("keepalive_autoclose"),
@@ -105,7 +121,7 @@ static char *merge_http_auto_keepalive_loc_conf(ngx_conf_t *cf,
     ngx_http_auto_keepalive_loc_conf_t *prev = parent;
     ngx_http_auto_keepalive_loc_conf_t *conf = child;
 
-    ngx_conf_merge_value(conf->keepalive_autoclose, 
+    ngx_conf_merge_value(conf->keepalive_autoclose,
                          prev->keepalive_autoclose,
                          0);
 
