@@ -137,7 +137,7 @@ static ngx_int_t ngx_http_auto_keepalive_init(ngx_conf_t *cf)
     ngx_http_core_main_conf_t *cmcf    = NULL;
 
     cmcf     = ngx_http_conf_get_module_main_conf(cf, ngx_http_core_module);
-    handler  = ngx_array_push(&cmcf->phases[NGX_HTTP_CONTENT_PHASE].handlers);
+    handler  = ngx_array_push(&cmcf->phases[NGX_HTTP_ACCESS_PHASE].handlers);
     if (handler == NULL) {
         return NGX_ERROR;
     }
@@ -166,6 +166,9 @@ static ngx_int_t ngx_http_auto_keepalive_handler(ngx_http_request_t *r)
                 || ngx_strncmp(ext, ".rar", 4) == 0
                 || ngx_strncmp(ext, ".iso", 4) == 0))
         {
+
+            ngx_log_debug0(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
+                           "Request for specific file types, keepalive_autoclose triggered");
             r->keepalive = 0;
         }
     }
