@@ -72,14 +72,14 @@ static ngx_command_t ngx_http_auto_keepalive_commands[] = {
 };
 
 static ngx_http_module_t ngx_http_auto_keepalive_module_ctx = {
-    NULL, /* preconfiguration  */
-    ngx_http_auto_keepalive_init, /* postconfiguration */
+    NULL,                          /* preconfiguration  */
+    ngx_http_auto_keepalive_init,  /* postconfiguration */
 
-    NULL, /* create_main_conf */
-    NULL, /* init_main_conf   */
+    NULL,                          /* create_main_conf */
+    NULL,                          /* init_main_conf   */
 
-    NULL, /* create_srv_conf  */
-    NULL, /* merge_srv_conf   */
+    NULL,                          /* create_srv_conf  */
+    NULL,                          /* merge_srv_conf   */
 
     create_http_auto_keepalive_loc_conf,
     merge_http_auto_keepalive_loc_conf
