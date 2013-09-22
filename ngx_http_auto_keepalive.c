@@ -32,6 +32,7 @@
 
 typedef struct {
     ngx_flag_t    keepalive_autoclose;     /* auto disable keepalive */
+    ngx_str_t     autoclose_filetypes;     /* file types to auto disable keepalive */
 } ngx_http_auto_keepalive_loc_conf_t;
 
 static void *create_http_auto_keepalive_loc_conf(ngx_conf_t *cf);
@@ -66,6 +67,15 @@ static ngx_command_t ngx_http_auto_keepalive_commands[] = {
       NGX_HTTP_LOC_CONF_OFFSET,  /* conf */
       0,                         /* offset */
       NULL                       /* post   */
+    },
+    { ngx_string("autoclose_filetypes"),
+      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|
+      NGX_CONF_TAKE1,
+      ngx_conf_set_str_slot,          /* set  */
+      NGX_HTTP_LOC_CONF_OFFSET,       /* conf */
+      offsetof(ngx_http_auto_keepalive_loc_conf_t,
+               autoclose_filetypes),  /* offset */
+      NULL                            /* post   */
     },
 
     ngx_null_command
@@ -127,6 +137,9 @@ static char *merge_http_auto_keepalive_loc_conf(ngx_conf_t *cf,
     ngx_conf_merge_value(conf->keepalive_autoclose,
                          prev->keepalive_autoclose,
                          0);
+    ngx_conf_merge_str_value(conf->autoclose_filetypes,
+                             prev->autoclose_filetypes,
+                             ".iso .tar .bz2 .gz .zip .rar");
 
     return NGX_CONF_OK;
 }
@@ -160,11 +173,8 @@ static ngx_int_t ngx_http_auto_keepalive_handler(ngx_http_request_t *r)
          */
         ext = (u_char *)ngx_strrlchr(r->uri.data, r->uri.data+r->uri.len, '.');
         if (ext
-            && (ngx_strncmp(ext, ".gz", 3) == 0
-                || ngx_strncmp(ext, ".bz2", 4) == 0
-                || ngx_strncmp(ext, ".zip", 4) == 0
-                || ngx_strncmp(ext, ".rar", 4) == 0
-                || ngx_strncmp(ext, ".iso", 4) == 0))
+            && ngx_strstrn(conf->autoclose_filetypes.data,
+                           (char *)ext, (r->uri.data + r->uri.len) - ext))
         {
 
             ngx_log_debug0(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
