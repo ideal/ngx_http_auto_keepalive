@@ -1,6 +1,6 @@
 # ngx_auto_keepalive
 
-This module disables keepalive automatically when the http requests are for iso, zip, gz ... files.
+This module disables keepalive automatically when the http requests are for iso, zip, gz ... files and have refers, e.g. when they are directed from official site to mirror.bjtu.edu.cn to download a software package. In this situation, we need not to still keep-alive for these requests.
 
 Installation Instructions
 =========================
