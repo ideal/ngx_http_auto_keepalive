@@ -11,3 +11,11 @@ Build and install by running in nginx directory:
 ./configure --add-module=/path/to/ngx_http_auto_keepalive
 ```
 
+Configuration
+=============
+
+In main, server or location config:
+```
+    keepalive_autoclose on;
+    autoclose_filetypes ".iso .zip";
+```
